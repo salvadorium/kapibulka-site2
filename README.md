@@ -12,9 +12,29 @@
 | `YANDEX_API_KEY` | API-ключ Yandex AI Studio |
 | `YANDEX_FOLDER_ID` | Идентификатор каталога Yandex Cloud |
 | `YANDEX_MODEL_URI` | URI модели Yandex AI Studio |
-| `YANDEX_BASE_URL` | Базовый URL API Yandex AI Studio |
+| `YANDEX_BASE_URL` | Базовый URL API (хост, например `https://ai.api.cloud.yandex.net`, либо полный адрес метода completion) |
 | `DATABASE_URL` | Строка подключения к PostgreSQL; Railway предоставляет её для подключённой базы |
 
 ## Локальный запуск
 
-Подробные сценарии, границы MVP и критерии готовности описаны в [spec.md](spec.md), порядок работ — в [PLAN.md](PLAN.md). Локальный режим получает обновления через Telegram `getUpdates` (long polling). Перед запуском убедитесь, что у бота отключён webhook: пока webhook настроен, Telegram не выдаёт обновления через `getUpdates`.
+Установите Python 3.10 или новее и зависимости:
+
+```powershell
+python -m pip install -r requirements.txt
+python bot.py
+```
+
+Перед запуском заполните `.env` по образцу `.env.example` и убедитесь, что PostgreSQL доступен по `DATABASE_URL`. Бот получает обновления через Telegram `getUpdates` (long polling). Если webhook настроен, бот сообщит об этом в журнале и завершится: Telegram не выдаёт обновления через `getUpdates`, пока активен webhook.
+
+## Запуск в Railway
+
+1. Добавьте PostgreSQL в тот же Railway project.
+2. В Variables сервиса бота задайте `DATABASE_URL` ссылкой на переменную PostgreSQL: `${{Postgres.DATABASE_URL}}` (если сервис базы назван иначе, замените `Postgres` его именем).
+3. Добавьте остальные переменные из таблицы выше. `.env` в GitHub не загружайте.
+4. Railway возьмёт команду запуска `python bot.py` из `railway.json`. Публичный домен для long polling не требуется; оставьте одну реплику бота.
+
+Для Railway webhook также должен быть отключён. Проверить состояние можно методом Telegram `getWebhookInfo`; отключить — `deleteWebhook`. Не запускайте параллельно второй экземпляр бота с тем же токеном.
+
+Бот поддерживает `/start`, `/help`, `/joke [тема]`, `/rate 1-5` и `/feedback текст`. После `/joke` можно поставить оценку кнопками. Отзывы пользователя сохраняются и передаются модели как контекст только для генераций этого же пользователя. Схема PostgreSQL создаётся при запуске.
+
+Подробные сценарии и критерии готовности описаны в [spec.md](spec.md), порядок работ — в [PLAN.md](PLAN.md).
