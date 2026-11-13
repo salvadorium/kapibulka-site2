@@ -11,6 +11,8 @@
 | `TELEGRAM_BOT_TOKEN` | Токен Telegram-бота от BotFather |
 | `YANDEX_API_KEY` | API-ключ Yandex AI Studio |
 | `YANDEX_FOLDER_ID` | Идентификатор каталога Yandex Cloud |
+| `YANDEX_MODEL_URI` | URI модели Yandex AI Studio |
+| `YANDEX_BASE_URL` | Базовый URL API Yandex AI Studio |
 | `DATABASE_URL` | Строка подключения к PostgreSQL; Railway предоставляет её для подключённой базы |
 
 ## Локальный запуск
